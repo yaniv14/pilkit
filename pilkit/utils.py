@@ -5,7 +5,6 @@ from io import UnsupportedOperation
 from .exceptions import UnknownExtension, UnknownFormat
 from .lib import Image, ImageFile, StringIO, string_types
 
-
 RGBA_TRANSPARENCY_FORMATS = ['PNG', 'WEBP']
 PALETTE_TRANSPARENCY_FORMATS = ['PNG', 'GIF']
 DEFAULT_EXTENSIONS = {
@@ -233,15 +232,16 @@ def save_image(img, outfile, format, options=None, autoconvert=True):
     return outfile
 
 
-class quiet(object):
+class quiet:
     """
     A context manager for suppressing the stderr activity of PIL's C libraries.
     Based on http://stackoverflow.com/a/978264/155370
 
     """
+
     def __enter__(self):
         try:
-            self.stderr_fd = sys.__stderr__.fileno()            
+            self.stderr_fd = sys.__stderr__.fileno()
         except AttributeError:
             # In case of Azure, the file descriptor is not present so we can return
             # from here
@@ -311,8 +311,7 @@ def prepare_image(img, format):
 
             alpha = img.split()[-1]
             mask = Image.eval(alpha, lambda a: 255 if a <= 128 else 0)
-            img = img.convert('RGB').convert('P', palette=Image.ADAPTIVE,
-                    colors=255)
+            img = img.convert('RGB').convert('P', palette=Image.Palette.ADAPTIVE, colors=255)
             img.paste(255, mask)
             save_kwargs['transparency'] = 255
         else:

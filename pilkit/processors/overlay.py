@@ -1,7 +1,7 @@
 from pilkit.lib import Image
 
 
-class ColorOverlay(object):
+class ColorOverlay:
     """
     Overlay a color mask with a the given opacity
     """
@@ -18,6 +18,6 @@ class ColorOverlay(object):
     def process(self, img):
         original = img = img.convert('RGB')
         overlay = Image.new('RGB', original.size, self.color)
-        mask = Image.new('RGBA', original.size, (0,0,0,int((1.0 - self.overlay_opacity)*255)))
+        mask = Image.new('RGBA', original.size, (0, 0, 0, int((1.0 - self.overlay_opacity) * 255)))
         img = Image.composite(original, overlay, mask).convert('RGB')
         return img

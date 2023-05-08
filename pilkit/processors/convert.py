@@ -1,5 +1,4 @@
-
-class Convert(object):
+class Convert:
     """
     Converts image to different mode
     """

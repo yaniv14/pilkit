@@ -1,6 +1,7 @@
 from PIL import ImageFilter
 
-class GaussianBlur(object):
+
+class GaussianBlur:
     """
     Performs Gaussian blur filter on image.
     """

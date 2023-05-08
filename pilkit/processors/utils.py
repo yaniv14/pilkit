@@ -10,6 +10,7 @@ def color_count(image):
     width, height = image.size
     return width * height * len(mode_descriptor.bands)
 
+
 def histogram_entropy_py(image):
     """ Calculate the entropy of an images' histogram. """
     from math import log2, fsum
@@ -17,9 +18,11 @@ def histogram_entropy_py(image):
     histonorm = (histocol / histosum for histocol in image.histogram())
     return -fsum(p * log2(p) for p in histonorm if p != 0.0)
 
+
 # Select the Pillow native histogram entropy function - if
 # available - and fall back to the Python implementation:
 histogram_entropy = getattr(Image.Image, 'entropy', histogram_entropy_py)
+
 
 def resolve_palette(image):
     """ Convert a palette image to a non-palette image. """

@@ -10,18 +10,20 @@ class ProcessorPipeline(list):
         processed_image = ProcessorPipeline([ProcessorA(), ProcessorB()]).process(image)
 
     """
+
     def process(self, img):
         for proc in self:
             img = proc.process(img)
         return img
 
 
-class Adjust(object):
+class Adjust:
     """
     Performs color, brightness, contrast, and sharpness enhancements on the
     image. See :mod:`PIL.ImageEnhance` for more imformation.
 
     """
+
     def __init__(self, color=1.0, brightness=1.0, contrast=1.0, sharpness=1.0):
         """
         :param color: A number between 0 and 1 that specifies the saturation
@@ -60,15 +62,16 @@ class Adjust(object):
                     # See https://github.com/jdriscoll/django-imagekit/issues/64
                     if name in ('Color', 'Contrast'):
                         img = Image.merge('RGBA', img.split()[:3] +
-                                original.split()[3:4])
+                                          original.split()[3:4])
         return img
 
 
-class Reflection(object):
+class Reflection:
     """
     Creates an image with a reflection.
 
     """
+
     def __init__(self, background_color='#FFFFFF', size=0.0, opacity=0.6):
         self.background_color = background_color
         self.size = size
@@ -110,17 +113,17 @@ class Reflection(object):
         return composite
 
 
-class Transpose(object):
+class Transpose:
     """
     Rotates or flips the image.
 
     """
     AUTO = 'auto'
-    FLIP_HORIZONTAL = Image.FLIP_LEFT_RIGHT
-    FLIP_VERTICAL = Image.FLIP_TOP_BOTTOM
-    ROTATE_90 = Image.ROTATE_90
-    ROTATE_180 = Image.ROTATE_180
-    ROTATE_270 = Image.ROTATE_270
+    FLIP_HORIZONTAL = Image.Transpose.FLIP_HORIZONTAL
+    FLIP_VERTICAL = Image.Transpose.FLIP_VERTICAL
+    ROTATE_90 = Image.Transpose.ROTATE_90
+    ROTATE_180 = Image.Transpose.ROTATE_180
+    ROTATE_270 = Image.Transpose.ROTATE_270
 
     methods = [AUTO]
     _EXIF_ORIENTATION_STEPS = {
@@ -170,7 +173,7 @@ class Transpose(object):
         return img
 
 
-class Anchor(object):
+class Anchor:
     """
     Defines all the anchor points needed by the various processor classes.
 
@@ -209,12 +212,13 @@ class Anchor(object):
         return anchor
 
 
-class MakeOpaque(object):
+class MakeOpaque:
     """
     Pastes the provided image onto an image of a solid color. Used for when you
     want to make transparent images opaque.
 
     """
+
     def __init__(self, background_color=(255, 255, 255)):
         self.background_color = background_color
 

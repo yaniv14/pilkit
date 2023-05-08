@@ -3,11 +3,12 @@ from .utils import resolve_palette
 from ..lib import Image
 
 
-class Resize(object):
+class Resize:
     """
     Resizes an image to the specified width and height.
 
     """
+
     def __init__(self, width, height, upscale=True):
         """
         :param width: The target width, in pixels.
@@ -22,17 +23,18 @@ class Resize(object):
     def process(self, img):
         if self.upscale or (self.width < img.size[0] and self.height < img.size[1]):
             img = resolve_palette(img)
-            img = img.resize((self.width, self.height), Image.ANTIALIAS)
+            img = img.resize((self.width, self.height), Image.Resampling.LANCZOS)
         return img
 
 
-class ResizeToCover(object):
+class ResizeToCover:
     """
     Resizes the image to the smallest possible size that will entirely cover the
     provided dimensions. You probably won't be using this processor directly,
     but it's used internally by ``ResizeToFill`` and ``SmartResize``.
 
     """
+
     def __init__(self, width, height, upscale=True):
         """
         :param width: The target width, in pixels.
@@ -45,14 +47,14 @@ class ResizeToCover(object):
     def process(self, img):
         original_width, original_height = img.size
         ratio = max(float(self.width) / original_width,
-                float(self.height) / original_height)
+                    float(self.height) / original_height)
         new_width, new_height = (int(round(original_width * ratio)),
-                int(round(original_height * ratio)))
+                                 int(round(original_height * ratio)))
         img = Resize(new_width, new_height, upscale=self.upscale).process(img)
         return img
 
 
-class ResizeToFill(object):
+class ResizeToFill:
     """
     Resizes an image, cropping it to the exact specified width and height.
 
@@ -80,13 +82,14 @@ class ResizeToFill(object):
                     anchor=self.anchor).process(img)
 
 
-class SmartResize(object):
+class SmartResize:
     """
     The ``SmartResize`` processor is identical to ``ResizeToFill``, except that
     it uses entropy to crop the image instead of a user-specified anchor point.
     Internally, it simply runs the ``ResizeToCover`` and ``SmartCrop``
     processors in series.
     """
+
     def __init__(self, width, height, upscale=True):
         """
         :param width: The target width, in pixels.
@@ -104,12 +107,13 @@ class SmartResize(object):
         return SmartCrop(self.width, self.height).process(img)
 
 
-class ResizeCanvas(object):
+class ResizeCanvas:
     """
     Resizes the canvas, using the provided background color if the new size is
     larger than the current image.
 
     """
+
     def __init__(self, width, height, color=None, anchor=None, x=None, y=None):
         """
         :param width: The target width, in pixels.
@@ -137,7 +141,7 @@ class ResizeCanvas(object):
         if x is not None or y is not None:
             if anchor:
                 raise Exception('You may provide either an anchor or x and y'
-                        ' coordinate, but not both.')
+                                ' coordinate, but not both.')
             else:
                 self.x, self.y = x or 0, y or 0
                 self.anchor = None
@@ -154,10 +158,28 @@ class ResizeCanvas(object):
 
         if self.anchor:
             anchor = Anchor.get_tuple(self.anchor)
-            trim_x, trim_y = self.width - original_width, \
-                    self.height - original_height
-            x = int(float(trim_x) * float(anchor[0]))
-            y = int(float(trim_y) * float(anchor[1]))
+            anchor_x = original_width * anchor[0]
+            anchor_y = original_height * anchor[1]
+            delta_x = self.width - original_width
+            delta_y = self.height - original_height
+            if delta_y == 0:
+                # taller image than original
+                if anchor_x > original_width - self.width / 2:
+                    anchor_x = original_width - self.width / 2
+                elif anchor_x < self.width / 2:
+                    anchor_x = self.width / 2
+                x = self.width / 2 - anchor_x
+                y = 0
+            else:
+                # wider image than original
+                if anchor_y > original_height - self.height / 2:
+                    anchor_y = original_height - self.height / 2
+                elif anchor_y < self.height / 2:
+                    anchor_y = self.height / 2
+                x = 0
+                y = self.height / 2 - anchor_y
+            x = int(x)
+            y = int(y)
         else:
             x, y = self.x, self.y
 
@@ -166,11 +188,12 @@ class ResizeCanvas(object):
         return new_img
 
 
-class AddBorder(object):
+class AddBorder:
     """
     Add a border of specific color and size to an image.
 
     """
+
     def __init__(self, thickness, color=None):
         """
         :param color: Color to use for the border
@@ -187,10 +210,10 @@ class AddBorder(object):
         new_width = img.size[0] + self.left + self.right
         new_height = img.size[1] + self.top + self.bottom
         return ResizeCanvas(new_width, new_height, color=self.color,
-                x=self.left, y=self.top).process(img)
+                            x=self.left, y=self.top).process(img)
 
 
-class ResizeToFit(object):
+class ResizeToFit:
     """
     Resizes an image to fit within the specified dimensions.
 
@@ -217,7 +240,7 @@ class ResizeToFit(object):
         cur_width, cur_height = img.size
         if not self.width is None and not self.height is None:
             ratio = min(float(self.width) / cur_width,
-                    float(self.height) / cur_height)
+                        float(self.height) / cur_height)
         else:
             if self.width is None:
                 ratio = float(self.height) / cur_height
@@ -231,7 +254,7 @@ class ResizeToFit(object):
         return img
 
 
-class Thumbnail(object):
+class Thumbnail:
     """
     Resize the image for use as a thumbnail. Wraps ``ResizeToFill``,
     ``ResizeToFit``, and ``SmartResize``.
@@ -265,7 +288,7 @@ class Thumbnail(object):
         if self.crop:
             if not self.width or not self.height:
                 raise Exception('You must provide both a width and height when'
-                    ' cropping.')
+                                ' cropping.')
             if self.anchor == 'auto':
                 processor = SmartResize(width=self.width, height=self.height, upscale=self.upscale)
             else:

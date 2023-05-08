@@ -3,7 +3,7 @@ from .utils import histogram_entropy
 from ..lib import Image, ImageChops, ImageDraw, ImageStat
 
 
-class Side(object):
+class Side:
     TOP = 't'
     RIGHT = 'r'
     BOTTOM = 'b'
@@ -30,10 +30,11 @@ def detect_border_color(img):
     return ImageStat.Stat(img.convert('RGBA').histogram(mask)).median
 
 
-class TrimBorderColor(object):
+class TrimBorderColor:
     """Trims a color from the sides of an image.
 
     """
+
     def __init__(self, color=None, tolerance=0.3, sides=Side.ALL):
         """
         :param color: The color to trim from the image, in a 4-tuple RGBA value,
@@ -61,9 +62,9 @@ class TrimBorderColor(object):
             # in a zero-sized image, we just ignore it.
             if not 0 <= self.tolerance <= 1:
                 raise ValueError('%s is an invalid tolerance. Acceptable values'
-                        ' are between 0 and 1 (inclusive).' % self.tolerance)
+                                 ' are between 0 and 1 (inclusive).' % self.tolerance)
             tmp = ImageChops.constant(diff, int(self.tolerance * 255)) \
-                    .convert('RGBA')
+                .convert('RGBA')
             diff = ImageChops.subtract(diff, tmp)
 
         bbox = diff.getbbox()
@@ -72,7 +73,7 @@ class TrimBorderColor(object):
         return img
 
 
-class Crop(object):
+class Crop:
     """
     Crops an image, cropping it to the specified width and height. You may
     optionally provide either an anchor or x and y coordinates. This processor
@@ -93,13 +94,13 @@ class Crop(object):
 
         original_width, original_height = img.size
         new_width, new_height = min(original_width, self.width), \
-                min(original_height, self.height)
+            min(original_height, self.height)
 
         return ResizeCanvas(new_width, new_height, anchor=self.anchor,
-                x=self.x, y=self.y).process(img)
+                            x=self.x, y=self.y).process(img)
 
 
-class SmartCrop(object):
+class SmartCrop:
     """
     Crop an image to the specified dimensions, whittling away the parts of the
     image with the least entropy.
