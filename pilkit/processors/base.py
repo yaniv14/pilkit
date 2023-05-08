@@ -61,8 +61,7 @@ class Adjust:
                     # to L mode, losing transparency info, so we put it back.
                     # See https://github.com/jdriscoll/django-imagekit/issues/64
                     if name in ('Color', 'Contrast'):
-                        img = Image.merge('RGBA', img.split()[:3] +
-                                          original.split()[3:4])
+                        img = Image.merge('RGBA', img.split()[:3] + original.split()[3:4])
         return img
 
 
@@ -88,7 +87,7 @@ class Reflection:
         background = Image.new("RGBA", img.size, background_color)
         # Calculate our alpha mask.
         start = int(255 - (255 * self.opacity))  # The start of our gradient.
-        steps = int(255 * self.size)  # The number of intermedite values.
+        steps = int(255 * self.size)  # The number of intermediate values.
         increment = (255 - start) / float(steps)
         mask = Image.new('L', (1, 255))
         for y in range(255):
@@ -106,7 +105,7 @@ class Reflection:
         # Create new image sized to hold both the original image and
         # the reflection.
         composite = Image.new("RGBA", (img.size[0], img.size[1] + reflection_height), background_color)
-        # Paste the orignal image and the reflection into the composite image.
+        # Paste the original image and the reflection into the composite image.
         composite.paste(img, (0, 0))
         composite.paste(reflection, (0, img.size[1]))
         # Return the image complete with reflection effect.
@@ -119,8 +118,8 @@ class Transpose:
 
     """
     AUTO = 'auto'
-    FLIP_HORIZONTAL = Image.Transpose.FLIP_HORIZONTAL
-    FLIP_VERTICAL = Image.Transpose.FLIP_VERTICAL
+    FLIP_HORIZONTAL = Image.Transpose.FLIP_LEFT_RIGHT
+    FLIP_VERTICAL = Image.Transpose.FLIP_TOP_BOTTOM
     ROTATE_90 = Image.Transpose.ROTATE_90
     ROTATE_180 = Image.Transpose.ROTATE_180
     ROTATE_270 = Image.Transpose.ROTATE_270
